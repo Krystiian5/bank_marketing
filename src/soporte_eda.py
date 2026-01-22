@@ -43,6 +43,12 @@ def eda_preliminar(df):
         print(f"- {tipo}: {columnas}")
 
     print("\n-----------------\n")
+    
+    print("\nColumnas con posibles valores booleanos (0/1):")
+    identificar_columnas_booleanas(df)
+
+    print("\n-----------------\n")
+
 
     print('NULOS')
     df_nulos = pd.DataFrame({"count":df.isnull().sum(),
@@ -65,4 +71,10 @@ def eda_preliminar(df):
     
     print('--------')
     print('ESTADISTICOS NUMERICOS')
-    display(df.describe().T)
+    display((df.describe().T).round(2))
+
+def identificar_columnas_booleanas(df):
+    #Identificar columnas con valores únicos (0,1)
+    posibles_booleanos = [col for col in df.columns if set(df[col].dropna().unique()) == {0,1}]
+    print(f"Columnas que podrían ser booleanas: {posibles_booleanos}")
+    return posibles_booleanos
