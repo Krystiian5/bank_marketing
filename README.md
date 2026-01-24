@@ -42,13 +42,19 @@ bank_marketing/
 │   │   └── customer-details.xlsx
 │   │
 │   └── processed/
+│   │   ├── 01.data_limpios_bank.csv
+│   │   └── 02.data_limpios_no_nulos_bank.csv
 │
 ├── notebooks/
-│   ├── 01_eda_preliminar.ipynb
-│   └── 02_limpieza.ipynb
+│   ├── 01_eda_preliminar_bank.ipynb
+│   └── 02_limpieza_bank.ipynb
+│   └── 03.gestion_nulos_bank.ipynb
+│   └── 04.eda_descriptivo_bank.ipynb
 │
 └── src/
     └── soporte_eda.py
+    └── soporte_limpieza.py
+    └── soporte_visualizacion.py
 ```
 
 ---
