@@ -99,30 +99,32 @@ def plot_hist(df, cols, bins=30):
         plt.show()
 
 # Boxplots vs variable objetivo
-
-def plot_box_vs_target(df, num_cols, target='y'):
+def plot_box_vs_target(
+    df,
+    num_cols,
+    target='y',
+    title_map=None,
+    xlabel='Suscripción',
+    ylabel_map=None
+):
     """
-    Genera boxplots de variables numéricas frente a la variable objetivo
-    utilizando un layout de dos columnas para una visualización compacta.
+    Genera boxplots de variables numéricas frente a la variable objetivo.
 
     Parameters
     ----------
     df : pd.DataFrame
-        DataFrame que contiene las variables a analizar.
+        DataFrame con los datos.
     num_cols : list
-        Lista de columnas numéricas.
-    target : str, opcional
-        Variable objetivo (por defecto 'y').
-
-    Returns
-    -------
-    None
-        Muestra los gráficos por pantalla.
+        Columnas numéricas a analizar.
+    target : str
+        Variable objetivo.
+    title_map : dict, opcional
+        Títulos descriptivos por variable.
+    xlabel : str, opcional
+        Etiqueta del eje X.
+    ylabel_map : dict, opcional
+        Etiquetas descriptivas del eje Y por variable.
     """
-    if len(num_cols) == 0:
-        print("No hay columnas numéricas para representar.")
-        return
-
     n_rows = (len(num_cols) + 1) // 2
     fig, axes = plt.subplots(n_rows, 2, figsize=(12, n_rows * 5))
     axes = axes.flatten()
@@ -138,13 +140,15 @@ def plot_box_vs_target(df, num_cols, target='y'):
             fliersize=3
         )
 
-        axes[i].set_title(f'{col} según {target}', fontsize=12, fontweight='bold')
-        axes[i].set_xlabel(target)
-        axes[i].set_ylabel(col)
+        title = title_map[col] if title_map and col in title_map else f'{col} según {target}'
+        ylabel = ylabel_map[col] if ylabel_map and col in ylabel_map else col
+
+        axes[i].set_title(title, fontsize=12, fontweight='bold')
+        axes[i].set_xlabel(xlabel)
+        axes[i].set_ylabel(ylabel)
         axes[i].grid(axis='y', linestyle='--', alpha=0.3)
         axes[i].grid(axis='x', visible=False)
 
-    # Eliminar subplots vacíos
     for j in range(i + 1, len(axes)):
         fig.delaxes(axes[j])
 
@@ -281,5 +285,50 @@ def plot_corr_heatmap(df):
         fontweight='bold'
     )
 
+    plt.tight_layout()
+    plt.show()
+
+def scatter_eda(
+    df,
+    x,
+    y,
+    title,
+    xlabel,
+    ylabel,
+    alpha=0.5
+):
+    """
+    Scatter plot genérico para EDA exploratorio entre dos variables numéricas.
+     Parámetros
+    ----------
+    df : DataFrame
+        Dataset de entrada.
+    x : str
+        Variable numérica para el eje X.
+    y : str
+        Variable numérica para el eje Y.
+    title : str
+        Título del gráfico.
+    xlabel : str
+        Etiqueta del eje X.
+    ylabel : str
+        Etiqueta del eje Y.
+    alpha : float, opcional
+        Nivel de transparencia de los puntos (por defecto 0.5).
+    """
+
+    plt.figure(figsize=(7, 4))
+    sns.scatterplot(
+        data=df,
+        x=x,
+        y=y,
+        alpha=alpha,
+        color='#4C72B0'
+    )
+
+    plt.title(title, fontweight='bold')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(axis='y', linestyle='--', alpha=0.3)
     plt.tight_layout()
     plt.show()
