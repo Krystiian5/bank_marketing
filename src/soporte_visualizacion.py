@@ -8,9 +8,8 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 import numpy as np
-
-
-
+    
+   
 
 def visualizar_numericas_nulos(df):
     """
@@ -156,13 +155,17 @@ def plot_box_vs_target(
     plt.show()
 
 #Barplots de tasa de suscripción por categorías 
-def plot_bar_rate(df, cat_cols, target='y'):
+def plot_bar_rate(
+    df,
+    cat_cols,
+    target='y',
+    title_map=None,
+    xlabel=None,
+    ylabel='Tasa de suscripción'
+):
     """
     Muestra barplots de la tasa de suscripción para variables categóricas,
     organizados en un layout de dos columnas.
-
-    La intensidad del color azul representa la magnitud de la tasa:
-    barras más altas → azul más oscuro.
 
     Parameters
     ----------
@@ -172,15 +175,18 @@ def plot_bar_rate(df, cat_cols, target='y'):
         Lista de columnas categóricas a analizar.
     target : str, opcional
         Variable objetivo binaria (por defecto 'y').
+    title_map : dict, opcional
+        Títulos descriptivos por variable.
+    xlabel : str, opcional
+        Etiqueta del eje X (si no se indica, usa el nombre de la variable).
+    ylabel : str, opcional
+        Etiqueta del eje Y (por defecto 'Tasa de suscripción').
 
     Returns
     -------
     None
-        La función muestra los gráficos por pantalla.
+        Muestra los gráficos por pantalla.
     """
-    import matplotlib.colors as mcolors
-    import numpy as np
-    import matplotlib.pyplot as plt
 
     n_cols = 2
     n_plots = len(cat_cols)
@@ -202,9 +208,13 @@ def plot_bar_rate(df, cat_cols, target='y'):
         colors = cmap(norm)
 
         axes[i].bar(rate[col], values, color=colors)
-        axes[i].set_title(f'Tasa de {target} por {col}', fontweight='bold')
-        axes[i].set_xlabel(col)
-        axes[i].set_ylabel(f'Proporción de {target}')
+
+        title = title_map[col] if title_map and col in title_map else f'Tasa de suscripción según {col}'
+        axes[i].set_title(title, fontweight='bold')
+
+        axes[i].set_xlabel(xlabel if xlabel else col)
+        axes[i].set_ylabel(ylabel)
+
         axes[i].grid(axis='y', linestyle='--', alpha=0.3)
         axes[i].tick_params(axis='x', rotation=45)
 
@@ -215,38 +225,66 @@ def plot_bar_rate(df, cat_cols, target='y'):
     plt.tight_layout()
     plt.show()
 
-def plot_time_evolution(df, time_col, target='y', color='#4C72B0'):
-   
+#Evolucion temporal
+def plot_time_evolution(
+    df,
+    time_col,
+    target='y',
+    color="#4C72B0",
+    title=None,
+    xlabel=None,
+    ylabel=None
+):
     """
-    Muestra la evolución temporal de la tasa de suscripción a lo largo del tiempo.
-
-    Parámetros
+    Muestra la evolución temporal de la tasa de suscripción con un gráfico de línea.
+    Parameters
     ----------
-    df : pandas.DataFrame
-        DataFrame con los datos
+    df : pd.DataFrame
+        DataFrame con los datos.
     time_col : str
-        Columna temporal (por ejemplo 'contact_year')
+        Columna temporal (por ejemplo 'contact_year').
     target : str, opcional
-        Variable objetivo binaria (por defecto 'y')
+        Variable objetivo binaria (por defecto 'y').
     color : str, opcional
-        Color de la línea (por defecto '#4C72B0')
+        Color de la línea (por defecto '#4C72B0').
+    title : str, opcional
+        Título del gráfico.
+    xlabel : str, opcional
+        Etiqueta del eje X.
+    ylabel : str, opcional
+        Etiqueta del eje Y.
+
+    Returns
+    -------
+    None
+        Muestra el gráfico por pantalla.
     """
 
+    # Calcular la tasa por periodo
     rate = df.groupby(time_col)[target].mean()
 
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(10, 5))
     plt.plot(
         rate.index,
         rate.values,
         marker='o',
-        color=color
+        color=color,
+        linewidth=2,
+        markersize=6
     )
 
-    plt.xticks(rate.index)  # 🔹 fuerza años enteros
-    plt.title(f'Evolución temporal de {target} por {time_col}')
-    plt.xlabel(time_col)
-    plt.ylabel(f'Proporción de {target}')
-    plt.grid(True)
+    # Títulos y etiquetas
+    plt.title(title if title else f'Evolución de {target} por {time_col}', fontsize=13, fontweight='bold')
+    plt.xlabel(xlabel if xlabel else time_col, fontsize=11)
+    plt.ylabel(ylabel if ylabel else f'Proporción de {target}', fontsize=11)
+
+    # Grid horizontal suave
+    plt.grid(axis='y', linestyle='--', alpha=0.3)
+    
+    # Forzar enteros en eje x si es tipo int
+    if pd.api.types.is_integer_dtype(rate.index):
+        plt.xticks(rate.index.astype(int))
+    
     plt.tight_layout()
     plt.show()
 
